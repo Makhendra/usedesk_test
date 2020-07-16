@@ -1,0 +1,332 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "USEDESCK_TEST Api",
+        "version": "1"
+    },
+    "paths": {
+        "/api/auth/login": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Авторизация",
+                "operationId": "App\\Http\\Controllers\\Api\\AuthController::login",
+                "requestBody": {
+                    "request": "auth",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "email": {
+                                        "description": "Get a JWT via given credentials.",
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "test@test.com"
+                                    },
+                                    "password": {
+                                        "description": "Get a JWT via given credentials.",
+                                        "type": "string",
+                                        "example": "a866b892e50261ac8576"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Успех",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "access_token": {
+                                            "description": "Get a JWT via given credentials.",
+                                            "type": "string",
+                                            "example": "long_string"
+                                        },
+                                        "token_type": {
+                                            "description": "Get a JWT via given credentials.",
+                                            "type": "string",
+                                            "example": "bearer"
+                                        },
+                                        "expires_in": {
+                                            "description": "Get a JWT via given credentials.",
+                                            "type": "integer",
+                                            "example": "3600"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Ошибка авторизации",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "description": "Get a JWT via given credentials.",
+                                            "type": "string",
+                                            "example": "Unauthorized"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Ошибка валидации"
+                    }
+                }
+            }
+        },
+        "/api/clients": {
+            "get": {
+                "tags": [
+                    "Clients"
+                ],
+                "summary": "Список клиентов",
+                "operationId": "getClientList",
+                "parameters": [
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Количество элементов на страницу",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Номер страницы",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "description": "Список клиентов",
+                                            "type": "bolean",
+                                            "example": "true"
+                                        },
+                                        "message": {
+                                            "description": "Список клиентов",
+                                            "type": "string",
+                                            "example": "Clients retrieved successfully"
+                                        },
+                                        "data": {
+                                            "description": "Список клиентов",
+                                            "properties": {
+                                                "current_page": {
+                                                    "description": "Список клиентов",
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "to": {
+                                                    "description": "Список клиентов",
+                                                    "type": "integer",
+                                                    "example": 3
+                                                },
+                                                "from": {
+                                                    "description": "Список клиентов",
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "total": {
+                                                    "description": "Список клиентов",
+                                                    "type": "integer",
+                                                    "example": 3
+                                                },
+                                                "per_page": {
+                                                    "description": "Список клиентов",
+                                                    "type": "integer",
+                                                    "example": 15
+                                                },
+                                                "last_page": {
+                                                    "description": "Список клиентов",
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "first_page_url": {
+                                                    "description": "Список клиентов",
+                                                    "type": "string",
+                                                    "example": "http://localhost:8000/api/clients?page=1"
+                                                },
+                                                "next_page_url": {
+                                                    "description": "Список клиентов",
+                                                    "type": "string",
+                                                    "example": "null"
+                                                },
+                                                "last_page_url": {
+                                                    "description": "Список клиентов",
+                                                    "type": "string",
+                                                    "example": "http://localhost:8000/api/clients?page=1"
+                                                },
+                                                "prev_page_url": {
+                                                    "description": "Список клиентов",
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "data": {
+                                                    "description": "Список клиентов",
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/Client"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Clients"
+                ],
+                "summary": "Добавление клиента",
+                "operationId": "App\\Http\\Controllers\\Api\\ClientController::store",
+                "requestBody": {
+                    "request": "client",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Client"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Успех"
+                    },
+                    "400": {
+                        "description": "Ошибка в запросе"
+                    },
+                    "401": {
+                        "description": "Ошибка авторизации"
+                    },
+                    "422": {
+                        "description": "Ошибка валидации"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Client": {
+                "title": "Клиент",
+                "description": "модель клиента",
+                "required": [
+                    "name",
+                    "last_name"
+                ],
+                "properties": {
+                    "id": {
+                        "title": "ID",
+                        "description": "ID",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "name": {
+                        "description": "Class Client",
+                        "example": "Иван"
+                    },
+                    "last_name": {
+                        "description": "Class Client",
+                        "example": "Иванов"
+                    },
+                    "emails": {
+                        "title": "Почтовые ящики клиента",
+                        "description": "Class Client",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ClientEmail"
+                        }
+                    },
+                    "phones": {
+                        "title": "Телефоны клиента",
+                        "description": "Class Client",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ClientPhone"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "ClientEmail": {
+                "title": "Почта клиента",
+                "description": "модель почты",
+                "required": [
+                    "email"
+                ],
+                "properties": {
+                    "email": {
+                        "description": "Class ClientEmail",
+                        "example": "ivanov@usedesk.ru"
+                    }
+                },
+                "type": "object"
+            },
+            "ClientPhone": {
+                "title": "Телефон клиента",
+                "description": "модель телефона",
+                "required": [
+                    "phone"
+                ],
+                "properties": {
+                    "phone": {
+                        "description": "Class ClientPhone",
+                        "example": "+7(999)9999999"
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "name": "Authorization",
+                "in": "header",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
+        }
+    }
+}
