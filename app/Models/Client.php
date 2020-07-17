@@ -6,14 +6,15 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Class Client
  * @package App\Models
  *
  * @OA\Schema(
- *     title="Клиент",
- *     description="модель клиента",
+ *     title="Client",
+ *     description="Client model",
  *     @OA\Property(
  *          property="id",
  *          format="int64",
@@ -23,23 +24,23 @@ use Illuminate\Database\Eloquent\Model;
  *     ),
  *     @OA\Property(
  *        property="name",
- *        example="Иван",
+ *        example="Ivan",
  *    ),
  *   @OA\Property(
  *        property="last_name",
- *        example="Иванов",
+ *        example="Ivanov",
  *    ),
  *    @OA\Property(
  *        property="emails",
  *        type="array",
- *        title="Почтовые ящики клиента",
- *        @OA\Items(ref="#/components/schemas/ClientEmail")
+ *        title="Client mailboxes",
+ *        @OA\Items(type="string", example="ivanov@usedesc.ru")
  *    ),
  *    @OA\Property(
  *        property="phones",
- *        title="Телефоны клиента",
+ *        title="Client phones",
  *        type="array",
- *        @OA\Items(ref="#/components/schemas/ClientPhone")
+ *        @OA\Items(type="string", example="+7(999)9999999")
  *    ),
  *    required={"name", "last_name"},
  * )
@@ -66,6 +67,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Client extends Model
 {
+    use SoftDeletes;
+
     protected $table = 'clients';
     protected $fillable = ['name', 'last_name'];
 
@@ -76,4 +79,5 @@ class Client extends Model
     public function phones() {
         return $this->hasMany(ClientPhone::class);
     }
+
 }

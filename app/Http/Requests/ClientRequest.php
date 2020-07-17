@@ -3,7 +3,9 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Validation\ValidationException;
 
 class ClientRequest extends FormRequest
 {
@@ -25,13 +27,20 @@ class ClientRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required',
-            'last_name' => 'required',
+            'name' => $this->getMethod() == 'POST' ? 'required'  : 'nullable',
+            'last_name' => $this->getMethod() == 'POST' ? 'required'  : 'nullable',
         ];
     }
 
-    public function response(array $errors)
+    protected function failedValidation($validator)
     {
-        return new JsonResponse(['error' => $errors], 422);
+        $errors = (new ValidationException($validator))->errors();
+
+        throw new HttpResponseException(
+            response()->json(
+                ['success' => false, 'message' => $errors, 'data' => []],
+                JsonResponse::HTTP_UNPROCESSABLE_ENTITY
+            )
+        );
     }
 }

@@ -35,10 +35,22 @@
 
 ## Установка
 
-``` git clone ```
-``` composer install  ```
-``` cp .env.example .env  ```
-``` change .env  ```
-``` php artisan key:generate ```
-``` php artisan migrate ```
-``` php artisan db:seed ```
+``` 
+git clone
+composer install
+cp .env.example .env
+change .env
+php artisan key:generate
+php artisan migrate
+php artisan db:seed
+Нужно скопировать пароль пользователя с консоли, для дальнейшей авторизации в api
+```
+
+## Комментарии к выполнению
+
+Удобнее всего запустить проект и с помощью swagger-ui протестировать [localhost](http://localhost:8000).
+
+Не сделала тесты, так как не было опыта с ними.
+
+По обновлению связанных сущностей, лучше было сделать отдельные url-адресы, наподобие ```/api/clients/{id}/phones/{id}```, но в рамках данной задачи посчитала что это излишне. Сделала что при передаче номеров или почт, прошлые данные стираются и записываются новые. 
+

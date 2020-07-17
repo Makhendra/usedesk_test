@@ -229,5 +229,5 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
 
     ],
-
+    'token_lifetime' => env('TOKEN_LIFETIME', 60)
 ];

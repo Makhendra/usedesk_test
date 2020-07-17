@@ -3,10 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Requests\LoginRequest;
-use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
 
-class AuthController extends Controller
+class AuthController extends ApiController
 {
     /**
      * Create a new AuthController instance.
@@ -23,9 +22,9 @@ class AuthController extends Controller
      *
      * @OA\POST(
      *     path="/api/auth/login",
-     *     summary="Авторизация",
+     *     summary="Login",
      *     tags={"Auth"},
-     *     @OA\Response(response="200", description="Успех", content={
+     *     @OA\Response(response="200", description="Success", content={
      *             @OA\MediaType(
      *                 mediaType="application/json",
      *                 @OA\Schema(
@@ -47,7 +46,7 @@ class AuthController extends Controller
      *                )
      *            )
      *     }),
-     *     @OA\Response(response="401", description="Ошибка авторизации", content={
+     *     @OA\Response(response="401", description="Authorisation Error", content={
      *             @OA\MediaType(
      *                 mediaType="application/json",
      *                 @OA\Schema(
@@ -59,7 +58,7 @@ class AuthController extends Controller
      *                )
      *            )
      *     }),
-     *     @OA\Response(response="422", description="Ошибка валидации"),
+     *     @OA\Response(response="422", description="Validation error"),
      *     @OA\RequestBody(
      *        request="auth",
      *        required=true,
@@ -83,7 +82,8 @@ class AuthController extends Controller
      *   ),
      *)
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @param LoginRequest $request
+     * @return JsonResponse
      */
     public function login(LoginRequest $request)
     {
@@ -92,38 +92,91 @@ class AuthController extends Controller
         $credentials = compact('email', 'password');
 
         if (!$token = auth()->attempt($credentials)) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+            return $this->sendUnauthorized();
         }
 
         return $this->respondWithToken($token);
     }
 
     /**
-     * Get the authenticated User.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function me()
-    {
-        return response()->json(auth()->user());
-    }
-
-    /**
      * Log the user out (Invalidate the token).
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @OA\POST(
+     *     path="/api/auth/logout",
+     *     summary="Logout",
+     *     tags={"Auth"},
+     *     security={ {"bearerAuth": {} } },
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful",
+     *         @OA\JsonContent(
+     *          @OA\Property(
+     *              property="message",
+     *              type="string",
+     *              example="Successfully logged out"
+     *          ),
+     *          @OA\Property(
+     *              property="data",
+     *              @OA\Items(type="string", example=""),
+     *          ),
+     *       )
+     *   )
+     * )
+     *
+     * @return JsonResponse
      */
     public function logout()
     {
-        auth()->logout();
+        auth()->logout(true);
 
-        return response()->json(['message' => 'Successfully logged out']);
+        return $this->sendSuccess( 'Successfully logged out');
     }
 
     /**
      * Refresh a token.
+     * @OA\POST(
+     *     path="/api/auth/refresh",
+     *     summary="Refresh",
+     *     tags={"Auth"},
+     *     security={ {"bearerAuth": {} } },
+     *    @OA\Response(response="200", description="Success", content={
+     *             @OA\MediaType(
+     *                 mediaType="application/json",
+     *                 @OA\Schema(
+     *                      @OA\Property(
+     *                         property="access_token",
+     *                         type="string",
+     *                         example="long_string"
+     *                     ),
+     *                    @OA\Property(
+     *                         property="token_type",
+     *                         type="string",
+     *                         example="bearer"
+     *                     ),
+     *                    @OA\Property(
+     *                         property="expires_in",
+     *                         type="integer",
+     *                         example="3600"
+     *                     )
+     *                )
+     *            )
+     *     }),
+     *     @OA\Response(response="401", description="Authorisation Error", content={
+     *             @OA\MediaType(
+     *                 mediaType="application/json",
+     *                 @OA\Schema(
+     *                      @OA\Property(
+     *                         property="error",
+     *                         type="string",
+     *                         example="Unauthorized"
+     *                     )
+     *                )
+     *            )
+     *     }),
+     *   ),
+     * )
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function refresh()
     {
@@ -135,7 +188,7 @@ class AuthController extends Controller
      *
      * @param string $token
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     protected function respondWithToken($token)
     {
@@ -143,7 +196,7 @@ class AuthController extends Controller
             [
                 'access_token' => $token,
                 'token_type' => 'bearer',
-                'expires_in' => auth()->factory()->getTTL() * 60
+                'expires_in' => auth()->factory()->getTTL() * config('app.token_lifetime')
             ]
         );
     }

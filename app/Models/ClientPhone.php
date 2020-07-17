@@ -4,14 +4,15 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Class ClientPhone
  * @package App\Models
  *
  * @OA\Schema(
- *     title="Телефон клиента",
- *     description="модель телефона",
+ *     title="Phone client",
+ *     description="Phone model",
  *     @OA\Property(
  *        property="phone",
  *        example="+7(999)9999999",
@@ -28,10 +29,13 @@ use Illuminate\Database\Eloquent\Model;
  */
 class ClientPhone extends Model
 {
+    use SoftDeletes;
+
     protected $table = 'client_phones';
     protected $fillable = ['client_id', 'phone'];
 
-    public function client() {
+    public function client()
+    {
         return $this->belongsTo(Client::class);
     }
 }

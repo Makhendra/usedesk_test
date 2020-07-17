@@ -26,12 +26,11 @@ Route::group(
         Route::post('login', 'AuthController@login');
         Route::post('logout', 'AuthController@logout');
         Route::post('refresh', 'AuthController@refresh');
-        Route::post('me', 'AuthController@me');
     }
 );
 
 Route::group(['middleware' => 'api', 'namespace' => 'Api', 'as' => 'api.'], function () {
-    Route::get('/error/{code}', ['as' => 'error', 'uses' => 'ApiController@sendError']);
+    Route::get('/unauthorized', ['as' => 'unauthorized', 'uses' => 'ApiController@sendUnauthorized']);
 
     Route::group(['middleware' => 'auth'], function() {
         Route::resource('clients', 'ClientController');

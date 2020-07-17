@@ -10,7 +10,7 @@
                 "tags": [
                     "Auth"
                 ],
-                "summary": "Авторизация",
+                "summary": "Login",
                 "operationId": "App\\Http\\Controllers\\Api\\AuthController::login",
                 "requestBody": {
                     "request": "auth",
@@ -38,7 +38,7 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Успех",
+                        "description": "Success",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -65,7 +65,7 @@
                         }
                     },
                     "401": {
-                        "description": "Ошибка авторизации",
+                        "description": "Authorisation Error",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -82,9 +82,109 @@
                         }
                     },
                     "422": {
-                        "description": "Ошибка валидации"
+                        "description": "Validation error"
                     }
                 }
+            }
+        },
+        "/api/auth/logout": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Logout",
+                "operationId": "App\\Http\\Controllers\\Api\\AuthController::logout",
+                "responses": {
+                    "200": {
+                        "description": "Successful",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "description": "Log the user out (Invalidate the token).",
+                                            "type": "string",
+                                            "example": "Successfully logged out"
+                                        },
+                                        "data": {
+                                            "description": "Log the user out (Invalidate the token).",
+                                            "items": {
+                                                "type": "string",
+                                                "example": ""
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/auth/refresh": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Refresh",
+                "operationId": "App\\Http\\Controllers\\Api\\AuthController::refresh",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "access_token": {
+                                            "description": "Refresh a token.",
+                                            "type": "string",
+                                            "example": "long_string"
+                                        },
+                                        "token_type": {
+                                            "description": "Refresh a token.",
+                                            "type": "string",
+                                            "example": "bearer"
+                                        },
+                                        "expires_in": {
+                                            "description": "Refresh a token.",
+                                            "type": "integer",
+                                            "example": "3600"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Authorisation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "description": "Refresh a token.",
+                                            "type": "string",
+                                            "example": "Unauthorized"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/clients": {
@@ -92,13 +192,13 @@
                 "tags": [
                     "Clients"
                 ],
-                "summary": "Список клиентов",
+                "summary": "Clients list and search",
                 "operationId": "getClientList",
                 "parameters": [
                     {
                         "name": "per_page",
                         "in": "query",
-                        "description": "Количество элементов на страницу",
+                        "description": "Items per page",
                         "schema": {
                             "type": "integer"
                         }
@@ -106,84 +206,100 @@
                     {
                         "name": "page",
                         "in": "query",
-                        "description": "Номер страницы",
+                        "description": "Page number",
                         "schema": {
                             "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "search_field",
+                        "in": "query",
+                        "description": "Search field",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Search value",
+                        "schema": {
+                            "type": "string"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "successful operation",
+                        "description": "Successful operation",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
                                         "success": {
-                                            "description": "Список клиентов",
+                                            "description": "Clients list",
                                             "type": "bolean",
                                             "example": "true"
                                         },
                                         "message": {
-                                            "description": "Список клиентов",
+                                            "description": "Clients list",
                                             "type": "string",
                                             "example": "Clients retrieved successfully"
                                         },
                                         "data": {
-                                            "description": "Список клиентов",
+                                            "description": "Clients list",
                                             "properties": {
                                                 "current_page": {
-                                                    "description": "Список клиентов",
+                                                    "description": "Clients list",
                                                     "type": "integer",
                                                     "example": 1
                                                 },
                                                 "to": {
-                                                    "description": "Список клиентов",
+                                                    "description": "Clients list",
                                                     "type": "integer",
                                                     "example": 3
                                                 },
                                                 "from": {
-                                                    "description": "Список клиентов",
+                                                    "description": "Clients list",
                                                     "type": "integer",
                                                     "example": 1
                                                 },
                                                 "total": {
-                                                    "description": "Список клиентов",
+                                                    "description": "Clients list",
                                                     "type": "integer",
                                                     "example": 3
                                                 },
                                                 "per_page": {
-                                                    "description": "Список клиентов",
+                                                    "description": "Clients list",
                                                     "type": "integer",
                                                     "example": 15
                                                 },
                                                 "last_page": {
-                                                    "description": "Список клиентов",
+                                                    "description": "Clients list",
                                                     "type": "integer",
                                                     "example": 1
                                                 },
                                                 "first_page_url": {
-                                                    "description": "Список клиентов",
+                                                    "description": "Clients list",
                                                     "type": "string",
                                                     "example": "http://localhost:8000/api/clients?page=1"
                                                 },
                                                 "next_page_url": {
-                                                    "description": "Список клиентов",
+                                                    "description": "Clients list",
                                                     "type": "string",
                                                     "example": "null"
                                                 },
                                                 "last_page_url": {
-                                                    "description": "Список клиентов",
+                                                    "description": "Clients list",
                                                     "type": "string",
                                                     "example": "http://localhost:8000/api/clients?page=1"
                                                 },
                                                 "prev_page_url": {
-                                                    "description": "Список клиентов",
+                                                    "description": "Clients list",
                                                     "type": "integer",
                                                     "example": 1
                                                 },
                                                 "data": {
-                                                    "description": "Список клиентов",
+                                                    "description": "Clients list",
                                                     "type": "array",
                                                     "items": {
                                                         "$ref": "#/components/schemas/Client"
@@ -212,7 +328,7 @@
                 "tags": [
                     "Clients"
                 ],
-                "summary": "Добавление клиента",
+                "summary": "Add client",
                 "operationId": "App\\Http\\Controllers\\Api\\ClientController::store",
                 "requestBody": {
                     "request": "client",
@@ -227,16 +343,126 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Успех"
+                        "description": "Success"
                     },
                     "400": {
-                        "description": "Ошибка в запросе"
+                        "description": "Error in question"
                     },
                     "401": {
-                        "description": "Ошибка авторизации"
+                        "description": "Authorisation Error"
                     },
                     "422": {
-                        "description": "Ошибка валидации"
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/clients/{client_id}": {
+            "get": {
+                "tags": [
+                    "Clients"
+                ],
+                "summary": "Show client",
+                "operationId": "App\\Http\\Controllers\\Api\\ClientController::show",
+                "parameters": [
+                    {
+                        "name": "client_id",
+                        "in": "path",
+                        "description": "client id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "400": {
+                        "description": "Error in question"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Clients"
+                ],
+                "summary": "Update client",
+                "operationId": "App\\Http\\Controllers\\Api\\ClientController::update",
+                "parameters": [
+                    {
+                        "name": "client_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64",
+                            "minimum": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "request": "Client",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Client"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Client updated"
+                    },
+                    "400": {
+                        "description": "Error in question"
+                    },
+                    "401": {
+                        "description": "Authorisation Error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Clients"
+                ],
+                "summary": "Delete client",
+                "operationId": "App\\Http\\Controllers\\Api\\ClientController::destroy",
+                "parameters": [
+                    {
+                        "name": "client_id",
+                        "in": "path",
+                        "description": "client id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "401": {
+                        "description": "Authorisation Error"
                     }
                 },
                 "security": [
@@ -250,8 +476,8 @@
     "components": {
         "schemas": {
             "Client": {
-                "title": "Клиент",
-                "description": "модель клиента",
+                "title": "Client",
+                "description": "Client model",
                 "required": [
                     "name",
                     "last_name"
@@ -265,34 +491,36 @@
                     },
                     "name": {
                         "description": "Class Client",
-                        "example": "Иван"
+                        "example": "Ivan"
                     },
                     "last_name": {
                         "description": "Class Client",
-                        "example": "Иванов"
+                        "example": "Ivanov"
                     },
                     "emails": {
-                        "title": "Почтовые ящики клиента",
+                        "title": "Client mailboxes",
                         "description": "Class Client",
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/ClientEmail"
+                            "type": "string",
+                            "example": "ivanov@usedesc.ru"
                         }
                     },
                     "phones": {
-                        "title": "Телефоны клиента",
+                        "title": "Client phones",
                         "description": "Class Client",
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/ClientPhone"
+                            "type": "string",
+                            "example": "+7(999)9999999"
                         }
                     }
                 },
                 "type": "object"
             },
             "ClientEmail": {
-                "title": "Почта клиента",
-                "description": "модель почты",
+                "title": "Email client",
+                "description": "model email",
                 "required": [
                     "email"
                 ],
@@ -305,8 +533,8 @@
                 "type": "object"
             },
             "ClientPhone": {
-                "title": "Телефон клиента",
-                "description": "модель телефона",
+                "title": "Phone client",
+                "description": "Phone model",
                 "required": [
                     "phone"
                 ],

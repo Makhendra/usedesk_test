@@ -4,14 +4,15 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Class ClientEmail
  * @package App\Models
  *
  * @OA\Schema(
- *     title="Почта клиента",
- *     description="модель почты",
+ *     title="Email client",
+ *     description="model email",
  *     @OA\Property(
  *        property="email",
  *        example="ivanov@usedesk.ru",
@@ -28,10 +29,13 @@ use Illuminate\Database\Eloquent\Model;
  */
 class ClientEmail extends Model
 {
+    use SoftDeletes;
+
     protected $table = 'client_emails';
     protected $fillable = ['client_id', 'email'];
 
-    public function client() {
+    public function client()
+    {
         return $this->belongsTo(Client::class);
     }
 }
