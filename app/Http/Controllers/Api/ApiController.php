@@ -53,7 +53,8 @@ class ApiController extends Controller
     /**
      * @return JsonResponse
      */
-    public function notFound() {
+    public function notFound()
+    {
         return $this->sendResponse('Not found', JsonResponse::HTTP_NOT_FOUND, []);
     }
 
@@ -74,7 +75,8 @@ class ApiController extends Controller
         );
     }
 
-    public function getPerPage() {
+    public function getPerPage()
+    {
         return self::perPage;
     }
 }

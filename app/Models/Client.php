@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Schema;
 
 /**
  * Class Client
@@ -21,6 +22,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  *          description="ID",
  *          title="ID",
  *          example=1,
+ *         readOnly=true
  *     ),
  *     @OA\Property(
  *        property="name",
@@ -29,6 +31,18 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  *   @OA\Property(
  *        property="last_name",
  *        example="Ivanov",
+ *    ),
+ *    @OA\Property(
+ *        property="created_at",
+ *        type="string",
+ *        format="date-time",
+ *        readOnly=true
+ *    ),
+ *     @OA\Property(
+ *        property="updated_at",
+ *        type="string",
+ *        format="date-time",
+ *        readOnly=true
  *    ),
  *    @OA\Property(
  *        property="emails",
@@ -71,6 +85,7 @@ class Client extends Model
 
     protected $table = 'clients';
     protected $fillable = ['name', 'last_name'];
+    protected $hidden = ['deleted_at'];
 
     public function emails() {
         return $this->hasMany(ClientEmail::class);

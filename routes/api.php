@@ -33,6 +33,7 @@ Route::group(['middleware' => 'api', 'namespace' => 'Api', 'as' => 'api.'], func
     Route::get('/unauthorized', ['as' => 'unauthorized', 'uses' => 'ApiController@sendUnauthorized']);
 
     Route::group(['middleware' => 'auth'], function() {
+        Route::get('logs', 'LogApiController@index');
         Route::resource('clients', 'ClientController');
     });
 });

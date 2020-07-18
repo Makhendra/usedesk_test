@@ -2,6 +2,12 @@
 
 namespace App\Providers;
 
+use App\Models\Client;
+use App\Models\ClientEmail;
+use App\Models\ClientPhone;
+use App\Observers\ClientEmailObserver;
+use App\Observers\ClientObserver;
+use App\Observers\ClientPhoneObserver;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -23,6 +29,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        Client::observe(ClientObserver::class);
+        ClientEmail::observe(ClientEmailObserver::class);
+        ClientPhone::observe(ClientPhoneObserver::class);
     }
 }

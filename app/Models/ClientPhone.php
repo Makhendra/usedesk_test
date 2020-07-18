@@ -33,6 +33,7 @@ class ClientPhone extends Model
 
     protected $table = 'client_phones';
     protected $fillable = ['client_id', 'phone'];
+    protected $hidden = ['deleted_at'];
 
     public function client()
     {

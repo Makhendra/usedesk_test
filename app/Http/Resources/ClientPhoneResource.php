@@ -15,6 +15,7 @@ class ClientPhoneResource extends JsonResource
      */
     public function toArray($request)
     {
-        return parent::toArray($request);
+        $phones = array_values(parent::toArray($request));
+        return array_map(fn($v) => $v['phone'], $phones);
     }
 }

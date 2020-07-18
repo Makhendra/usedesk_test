@@ -33,6 +33,8 @@ class ClientEmail extends Model
 
     protected $table = 'client_emails';
     protected $fillable = ['client_id', 'email'];
+    protected $hidden = ['deleted_at'];
+    protected $visible = ['email'];
 
     public function client()
     {

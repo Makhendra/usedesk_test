@@ -28,11 +28,11 @@ class ClientRepository implements BaseRepositoryInterface
     /**
      * @var array
      */
-    private array $relations = ['emails', 'phones'];
+    private array $relations = ['emails:client_id,email', 'phones:client_id,phone'];
     /**
      * @var array
      */
-    private array $searchable = ['name', 'last_name', 'phone', 'email'];
+    private array $searchable = ['all', 'name', 'last_name', 'phone', 'email'];
 
     /**
      * ClientRepository constructor.
@@ -57,7 +57,8 @@ class ClientRepository implements BaseRepositoryInterface
     /**
      * @param $phones
      */
-    public function insertPhones($phones) {
+    public function insertPhones($phones)
+    {
         try {
             if ($phones) {
                 $insertValues = array_map(fn($phone) => compact('phone'), $phones);
@@ -72,7 +73,8 @@ class ClientRepository implements BaseRepositoryInterface
     /**
      * @param $emails
      */
-    public function insertEmails($emails) {
+    public function insertEmails($emails)
+    {
         try {
             if ($emails) {
                 $insertValues = array_map(fn($email) => compact('email'), $emails);
@@ -90,7 +92,7 @@ class ClientRepository implements BaseRepositoryInterface
      */
     public function find($id)
     {
-        return $this->model::with($this->relations)->find($id);
+        return $this->model->with($this->relations)->find($id);
     }
 
     /**
@@ -99,12 +101,13 @@ class ClientRepository implements BaseRepositoryInterface
      * @param null $searchValue
      * @return LengthAwarePaginator
      */
-    public function all($perPage, $searchField = null, $searchValue = null) {
+    public function all($perPage, $searchField = null, $searchValue = null)
+    {
         $result = $this->model::with($this->relations);
-        if($searchField) {
+        if ($searchField) {
             $result = $this->search($result, $searchField, $searchValue);
         }
-        return $result->paginate($perPage);
+        return $result->get();
     }
 
     /**
@@ -113,13 +116,21 @@ class ClientRepository implements BaseRepositoryInterface
      * @param $value
      * @return mixed
      */
-    public function search($result, $field, $value) {
-        if(in_array($field, $this->searchable)) {
-            if(in_array($field, ['phone', 'email'])) {
-                $relation = $field == 'phone' ? 'phones' : 'emails';
-                $result = $result->whereHas($relation, fn ($q) => $q->where($field, 'LIKE', "%$value%"));
+    public function search($result, $field, $value)
+    {
+        if (in_array($field, $this->searchable)) {
+            if ($field == 'all') {
+                $result = $result->orWhere('name','LIKE', "%$value%")
+                    ->orWhere('last_name','LIKE', "%$value%")
+                    ->orwhereHas('phones', fn($q) => $q->where('phone', 'LIKE', "%$value%"))
+                    ->orwhereHas('emails', fn($q) => $q->where('email', 'LIKE', "%$value%"));
             } else {
-                $result = $result->where($field, 'LIKE', "%$value%");
+                if (in_array($field, ['phone', 'email'])) {
+                    $relation = $field == 'phone' ? 'phones' : 'emails';
+                    $result = $result->whereHas($relation, fn($q) => $q->where($field, 'LIKE', "%$value%"));
+                } else {
+                    $result = $result->where($field, 'LIKE', "%$value%");
+                }
             }
         }
         return $result;
@@ -132,8 +143,8 @@ class ClientRepository implements BaseRepositoryInterface
      */
     public function update($request, $id)
     {
-        if ($client = $this->model::find($id)) {
-            $client->update($request->all());
+        if ($this->client = $this->model::find($id)) {
+            $this->client->update($request->all());
             $this->insertPhones($request->get('phones', null));
             $this->insertEmails($request->get('emails', null));
             return true;

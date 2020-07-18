@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Requests\ClientRequest;
+use App\Http\Resources\ClientCollection;
 use App\Http\Resources\ClientResource;
+use App\Http\Resources\ClientResourceJson;
+use App\Models\Client;
 use App\Repositories\ClientRepository;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -50,7 +53,8 @@ class ClientController extends ApiController
      *          description="Search field",
      *          in="query",
      *          @OA\Schema(
-     *              type="string"
+     *              type="enum",
+     *              enum={"name", "last_name", "phone", "email", "all"},
      *          )
      *      ),
      *     @OA\Parameter(
@@ -65,75 +69,19 @@ class ClientController extends ApiController
      *         response=200,
      *         description="Successful operation",
      *         @OA\JsonContent(
-     *          @OA\Property(
-     *              property="success",
-     *              type="bolean",
-     *              example="true"
-     *          ),
-     *          @OA\Property(
-     *              property="message",
-     *              type="string",
-     *              example="Clients retrieved successfully"
-     *          ),
-     *          @OA\Property(
-     *              property="data",
-     *              type="object",
-     *              @OA\Property(
-     *                  property="current_page",
-     *                  type="integer",
-     *                  example=1
-     *              ),
-     *             @OA\Property(
-     *                  property="to",
-     *                  type="integer",
-     *                  example=3
-     *              ),
-     *              @OA\Property(
-     *                  property="from",
-     *                  type="integer",
-     *                  example=1
-     *              ),
-     *              @OA\Property(
-     *                  property="total",
-     *                  type="integer",
-     *                  example=3
-     *              ),
-     *              @OA\Property(
-     *                  property="per_page",
-     *                  type="integer",
-     *                  example=15
-     *              ),
-     *              @OA\Property(
-     *                  property="last_page",
-     *                  type="integer",
-     *                  example=1
-     *              ),
-     *              @OA\Property(
-     *                  property="first_page_url",
-     *                  type="string",
-     *                  example="http://localhost:8000/api/clients?page=1"
-     *              ),
-     *              @OA\Property(
-     *                  property="next_page_url",
-     *                  type="string",
-     *                  example="null"
-     *              ),
-     *              @OA\Property(
-     *                  property="last_page_url",
-     *                  type="string",
-     *                  example="http://localhost:8000/api/clients?page=1"
-     *              ),
-     *              @OA\Property(
-     *                  property="prev_page_url",
-     *                  type="integer",
-     *                  example=1
-     *              ),
      *              @OA\Property(
      *                  property="data",
      *                  type="array",
      *                  @OA\Items(ref="#/components/schemas/Client")
-     *              )
-     *          ),
+     *              ),
+     *             @OA\Property(
+     *                  property="links",
+     *                  ref="#/components/schemas/Links"
+     *              ),
+     *             @OA\Property(
+     *                  property="meta",
+     *                  ref="#/components/schemas/Meta"
+     *             ),
      *        ),
      *     ),
      *     @OA\Response(response=400, description="Bad request"),
@@ -144,9 +92,10 @@ class ClientController extends ApiController
      */
     public function index(Request $request)
     {
-        return new ClientResource($this->repository->all(
-            $this->perPage, $request->get('search_field'), $request->get('search')
-        ));
+//        return ClientResource::collection($this->repository->all(
+//            $this->perPage, $request->get('search_field'), $request->get('search')
+//        ));
+        return new ClientResource(Client::paginate());
     }
 
     /**
@@ -178,7 +127,7 @@ class ClientController extends ApiController
     public function store(ClientRequest $request)
     {
         $client = $this->repository->create($request);
-        return $this->sendCreated($this->repository->find($client->id));
+        return $this->sendCreated(new ClientResourceJson($this->repository->find($client->id)));
     }
 
     /**
@@ -209,7 +158,10 @@ class ClientController extends ApiController
     public function show($id)
     {
         if ($client = $this->repository->find($id)) {
-            return $this->sendSuccess('Client shown successfully', $client);
+            return $this->sendSuccess(
+                'Client shown successfully',
+                new ClientResourceJson($client)
+            );
         }
         return $this->notFound();
     }
@@ -252,7 +204,10 @@ class ClientController extends ApiController
     public function update(Request $request, $id)
     {
         if ($this->repository->update($request, $id)) {
-            return $this->sendSuccess('Успешно обновлен', $this->repository->find($id));
+            return $this->sendSuccess(
+                'Успешно обновлен',
+                new ClientResourceJson($this->repository->find($id))
+            );
         }
         return $this->notFound();
     }

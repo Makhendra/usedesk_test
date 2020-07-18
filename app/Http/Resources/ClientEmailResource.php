@@ -15,6 +15,7 @@ class ClientEmailResource extends JsonResource
      */
     public function toArray($request)
     {
-        return parent::toArray($request);
+        $emails = array_values(parent::toArray($request));
+        return array_map(fn($v) => $v['email'], $emails);
     }
 }

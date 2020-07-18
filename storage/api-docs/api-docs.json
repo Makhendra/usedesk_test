@@ -216,7 +216,14 @@
                         "in": "query",
                         "description": "Search field",
                         "schema": {
-                            "type": "string"
+                            "type": "enum",
+                            "enum": [
+                                "name",
+                                "last_name",
+                                "phone",
+                                "email",
+                                "all"
+                            ]
                         }
                     },
                     {
@@ -235,78 +242,18 @@
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "success": {
-                                            "description": "Clients list",
-                                            "type": "bolean",
-                                            "example": "true"
-                                        },
-                                        "message": {
-                                            "description": "Clients list",
-                                            "type": "string",
-                                            "example": "Clients retrieved successfully"
-                                        },
                                         "data": {
                                             "description": "Clients list",
-                                            "properties": {
-                                                "current_page": {
-                                                    "description": "Clients list",
-                                                    "type": "integer",
-                                                    "example": 1
-                                                },
-                                                "to": {
-                                                    "description": "Clients list",
-                                                    "type": "integer",
-                                                    "example": 3
-                                                },
-                                                "from": {
-                                                    "description": "Clients list",
-                                                    "type": "integer",
-                                                    "example": 1
-                                                },
-                                                "total": {
-                                                    "description": "Clients list",
-                                                    "type": "integer",
-                                                    "example": 3
-                                                },
-                                                "per_page": {
-                                                    "description": "Clients list",
-                                                    "type": "integer",
-                                                    "example": 15
-                                                },
-                                                "last_page": {
-                                                    "description": "Clients list",
-                                                    "type": "integer",
-                                                    "example": 1
-                                                },
-                                                "first_page_url": {
-                                                    "description": "Clients list",
-                                                    "type": "string",
-                                                    "example": "http://localhost:8000/api/clients?page=1"
-                                                },
-                                                "next_page_url": {
-                                                    "description": "Clients list",
-                                                    "type": "string",
-                                                    "example": "null"
-                                                },
-                                                "last_page_url": {
-                                                    "description": "Clients list",
-                                                    "type": "string",
-                                                    "example": "http://localhost:8000/api/clients?page=1"
-                                                },
-                                                "prev_page_url": {
-                                                    "description": "Clients list",
-                                                    "type": "integer",
-                                                    "example": 1
-                                                },
-                                                "data": {
-                                                    "description": "Clients list",
-                                                    "type": "array",
-                                                    "items": {
-                                                        "$ref": "#/components/schemas/Client"
-                                                    }
-                                                }
-                                            },
-                                            "type": "object"
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Client"
+                                            }
+                                        },
+                                        "links": {
+                                            "$ref": "#/components/schemas/Links"
+                                        },
+                                        "meta": {
+                                            "$ref": "#/components/schemas/Meta"
                                         }
                                     },
                                     "type": "object"
@@ -471,6 +418,62 @@
                     }
                 ]
             }
+        },
+        "/api/logs": {
+            "get": {
+                "tags": [
+                    "Logs"
+                ],
+                "summary": "Logs opertaion list and search",
+                "operationId": "getLogOpertions",
+                "parameters": [
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Items per page",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "operation",
+                        "in": "query",
+                        "description": "operation in list:create, update, delete",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "user_id",
+                        "in": "query",
+                        "description": "User id",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
         }
     },
     "components": {
@@ -487,6 +490,7 @@
                         "title": "ID",
                         "description": "ID",
                         "format": "int64",
+                        "readOnly": true,
                         "example": 1
                     },
                     "name": {
@@ -496,6 +500,18 @@
                     "last_name": {
                         "description": "Class Client",
                         "example": "Ivanov"
+                    },
+                    "created_at": {
+                        "description": "Class Client",
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true
+                    },
+                    "updated_at": {
+                        "description": "Class Client",
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true
                     },
                     "emails": {
                         "title": "Client mailboxes",
@@ -542,6 +558,65 @@
                     "phone": {
                         "description": "Class ClientPhone",
                         "example": "+7(999)9999999"
+                    }
+                },
+                "type": "object"
+            },
+            "Links": {
+                "title": "Links",
+                "properties": {
+                    "self": {
+                        "type": "string",
+                        "example": "link-value"
+                    },
+                    "first": {
+                        "type": "string",
+                        "example": "http://localhost:8000/api/clients?page=1"
+                    },
+                    "last": {
+                        "type": "string",
+                        "example": "http://localhost:8000/api/clients?page=2"
+                    },
+                    "prev": {
+                        "example": null
+                    },
+                    "next": {
+                        "type": "string",
+                        "example": "http://localhost:8000/api/clients?page=2"
+                    }
+                },
+                "type": "object"
+            },
+            "Meta": {
+                "title": "Meta",
+                "properties": {
+                    "current_page": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "from": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "last_page": {
+                        "type": "integer",
+                        "example": 2
+                    },
+                    "path": {
+                        "type": "string",
+                        "example": "http://localhost:8000/api/clients"
+                    },
+                    "per_page": {
+                        "type": "integer",
+                        "example": 10
+                    },
+                    "to": {
+                        "type": "integer",
+                        "example": 10
+                    },
+                    "total": {
+                        "type": "integer",
+                        "example": 20
                     }
                 },
                 "type": "object"
