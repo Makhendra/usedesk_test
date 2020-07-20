@@ -37,10 +37,12 @@
 
 ``` 
 git clone
+cd usedesk_test
 composer install
 cp .env.example .env
 change .env
 php artisan key:generate
+php artisan jwt:secret
 php artisan migrate
 php artisan db:seed
 Нужно скопировать пароль пользователя с консоли, для дальнейшей авторизации в api

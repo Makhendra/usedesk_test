@@ -13,7 +13,7 @@ class ClientObserver
 
     public function __construct()
     {
-        $this->user_id = auth()->id();
+        $this->user_id = auth()->id() ?: 1;
     }
 
     /**

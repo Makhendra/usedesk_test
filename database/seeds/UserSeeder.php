@@ -14,8 +14,11 @@ class UserSeeder extends Seeder
      */
     public function run()
     {
+        User::truncate();
         $users = [
-            ['name' => 'test', 'email' => 'test@test.com']
+            ['name' => 'test1', 'email' => 'test@test1.com'],
+            ['name' => 'test2', 'email' => 'test@test2.com'],
+            ['name' => 'test3', 'email' => 'test@test3.com'],
         ];
         foreach ($users as $user) {
             $randomPassword = bin2hex(random_bytes($this->passLength));
